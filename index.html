@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Monitor Ansia</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Monitor Ansia Giornaliero</h1>
+  <form id="log-form">
+    <label>Ansia (0-10)<br><input type="number" id="ansia" min="0" max="10"></label><br>
+    <label>Nodo stomaco (0-10)<br><input type="number" id="nodo" min="0" max="10"></label><br>
+    <label>Energia/Azione (0-10) - ore 14:00<br><input type="number" id="energia" min="0" max="10"></label><br>
+    <label>Rivotril preso?<br><input type="text" id="rivotril" placeholder="S/N + ora + dose"></label><br>
+    <label>Note<br><textarea id="note"></textarea></label><br>
+    <button type="submit">Salva</button>
+  </form>
+  <button onclick="exportData()">Esporta CSV</button>
+  <h2>Storico</h2>
+  <ul id="log-list"></ul>
+  <script src="app.js"></script>
+</body>
+</html>
