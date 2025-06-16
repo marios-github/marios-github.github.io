@@ -1,11 +1,12 @@
 const SUPABASE_URL = "https://jhhgmabujgkwvvscbfbr.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoaGdtYWJ1amdrd3Z2c2NiZmJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNTk4MDYsImV4cCI6MjA2NTYzNTgwNn0.1gqw5yVQVH5nL2Uns14rGamSig45qL1L2My1fcsgElM"; // Replace manually after download
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 
 async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) document.getElementById("auth-error").innerText = error.message;
   else location.reload();
 }
@@ -13,18 +14,18 @@ async function login() {
 async function signup() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { error } = await sb.auth.signUp({ email, password });
   if (error) document.getElementById("auth-error").innerText = error.message;
   else alert("Controlla la tua email per completare la registrazione.");
 }
 
 async function logout() {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
   location.reload();
 }
 
 window.onload = async function () {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sb.auth.getSession();
   if (session) {
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("app").style.display = "block";
@@ -42,13 +43,13 @@ document.getElementById("log-form").onsubmit = async function (e) {
     f5: document.getElementById("note").value,
     date: new Date().toISOString().split("T")[0]
   };
-  await supabase.from("logs").insert([log]);
+  await sb.from("logs").insert([log]);
   loadLogs();
   document.getElementById("log-form").reset();
 };
 
 async function loadLogs() {
-  const { data, error } = await supabase.from("logs").select("*").order("date", { ascending: false });
+  const { data, error } = await sb.from("logs").select("*").order("date", { ascending: false });
   if (error) {
     alert("Errore nel caricamento dei dati.");
     return;
