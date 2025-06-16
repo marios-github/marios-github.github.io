@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://jhhgmabujgkwvvscbfbr.supabase.co";
-const SUPABASE_KEY = "YOUR_ANON_KEY_HERE"; // Replace manually after download
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoaGdtYWJ1amdrd3Z2c2NiZmJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNTk4MDYsImV4cCI6MjA2NTYzNTgwNn0.1gqw5yVQVH5nL2Uns14rGamSig45qL1L2My1fcsgElM"; // Replace manually after download
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function login() {
