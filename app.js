@@ -1,4 +1,4 @@
-const PIN = "5273";
+const PIN = "0480";
 
 window.onload = function() {
   if (!localStorage.getItem("pin-validated")) {
