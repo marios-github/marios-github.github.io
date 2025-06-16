@@ -5,20 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Monitor Ansia</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>Monitor Ansia Giornaliero</h1>
-  <form id="log-form">
-    <label>Ansia (0-10)<br><input type="number" id="ansia" min="0" max="10"></label><br>
-    <label>Nodo stomaco (0-10)<br><input type="number" id="nodo" min="0" max="10"></label><br>
-    <label>Energia/Azione (0-10) - ore 14:00<br><input type="number" id="energia" min="0" max="10"></label><br>
-    <label>Rivotril preso?<br><input type="text" id="rivotril" placeholder="S/N + ora + dose"></label><br>
-    <label>Note<br><textarea id="note"></textarea></label><br>
-    <button type="submit">Salva</button>
-  </form>
-  <button onclick="exportData()">Esporta CSV</button>
-  <h2>Storico</h2>
-  <ul id="log-list"></ul>
+  <div id="pin-protect" style="display: none;">
+    <h2>Inserisci PIN</h2>
+    <input type="password" id="pin-input" placeholder="PIN">
+    <button onclick="checkPIN()">Accedi</button>
+    <p id="pin-error" style="color:red;"></p>
+  </div>
+
+  <div id="app" style="display: none;">
+    <h1>Monitor Ansia Giornaliero</h1>
+    <form id="log-form">
+      <label>Ansia (0-10)<br><input type="number" id="ansia" min="0" max="10"></label><br>
+      <label>Nodo stomaco (0-10)<br><input type="number" id="nodo" min="0" max="10"></label><br>
+      <label>Energia/Azione (0-10) - ore 14:00<br><input type="number" id="energia" min="0" max="10"></label><br>
+      <label>Rivotril preso?<br><input type="text" id="rivotril" placeholder="S/N + ora + dose"></label><br>
+      <label>Note<br><textarea id="note"></textarea></label><br>
+      <button type="submit">Salva</button>
+    </form>
+    <button onclick="exportData()">Esporta CSV</button>
+    <h2>Storico</h2>
+    <table id="log-table">
+      <thead><tr><th>Data</th><th>Ansia</th><th>Nodo</th><th>Energia</th><th>Rivotril</th><th>Note</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <h2>Grafico Settimanale</h2>
+    <canvas id="weeklyChart" width="400" height="200"></canvas>
+    <h2>Grafico Mensile</h2>
+    <canvas id="monthlyChart" width="400" height="200"></canvas>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>
