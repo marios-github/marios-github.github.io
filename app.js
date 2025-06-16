@@ -1,132 +1,92 @@
-const PIN = "0480";
+const SUPABASE_URL = "https://jhhgmabujgkwvvscbfbr.supabase.co";
+const SUPABASE_KEY = "YOUR_ANON_KEY_HERE"; // Replace manually after download
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-window.onload = function() {
-  if (!localStorage.getItem("pin-validated")) {
-    document.getElementById("pin-protect").style.display = "block";
-  } else {
-    showApp();
-  }
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) document.getElementById("auth-error").innerText = error.message;
+  else location.reload();
+}
 
-  const now = new Date();
-  const lastEntry = JSON.parse(localStorage.getItem("logs") || "[]").slice(-1)[0];
-  if (!lastEntry || new Date(lastEntry.date).toDateString() !== now.toDateString()) {
-    if (now.getHours() >= 14) {
-      alert("Hai compilato il log di oggi?");
-    }
+async function signup() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const { error } = await supabase.auth.signUp({ email, password });
+  if (error) document.getElementById("auth-error").innerText = error.message;
+  else alert("Controlla la tua email per completare la registrazione.");
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  location.reload();
+}
+
+window.onload = async function () {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    loadLogs();
   }
 };
 
-function checkPIN() {
-  const input = document.getElementById("pin-input").value;
-  if (input === PIN) {
-    localStorage.setItem("pin-validated", true);
-    showApp();
-  } else {
-    document.getElementById("pin-error").innerText = "PIN errato.";
-  }
-}
-
-function showApp() {
-  document.getElementById("pin-protect").style.display = "none";
-  document.getElementById("app").style.display = "block";
-  renderLogs();
-  renderCharts();
-}
-
-const form = document.getElementById("log-form");
-form.onsubmit = function (e) {
+document.getElementById("log-form").onsubmit = async function (e) {
   e.preventDefault();
   const log = {
-    date: new Date().toISOString().split("T")[0],
-    ansia: document.getElementById("ansia").value,
-    nodo: document.getElementById("nodo").value,
-    energia: document.getElementById("energia").value,
-    rivotril: document.getElementById("rivotril").value,
-    note: document.getElementById("note").value,
+    f1: document.getElementById("ansia").value,
+    f2: document.getElementById("nodo").value,
+    f3: document.getElementById("energia").value,
+    f4: document.getElementById("rivotril").value,
+    f5: document.getElementById("note").value,
+    date: new Date().toISOString().split("T")[0]
   };
-  const logs = getLogs();
-  logs.push(log);
-  saveLogs(logs);
-  form.reset();
-  renderLogs();
-  renderCharts();
+  await supabase.from("logs").insert([log]);
+  loadLogs();
+  document.getElementById("log-form").reset();
 };
 
-function getLogs() {
-  return JSON.parse(localStorage.getItem("logs") || "[]");
-}
-
-function saveLogs(logs) {
-  localStorage.setItem("logs", JSON.stringify(logs));
-}
-
-function renderLogs() {
+async function loadLogs() {
+  const { data, error } = await supabase.from("logs").select("*").order("date", { ascending: false });
+  if (error) {
+    alert("Errore nel caricamento dei dati.");
+    return;
+  }
   const tbody = document.querySelector("#log-table tbody");
   tbody.innerHTML = "";
-  const logs = getLogs();
-  logs.forEach(log => {
-    const row = tbody.insertRow();
-    row.insertCell(0).innerText = log.date;
-    row.insertCell(1).innerText = log.ansia;
-    row.insertCell(2).innerText = log.nodo;
-    row.insertCell(3).innerText = log.energia;
-    row.insertCell(4).innerText = log.rivotril;
-    row.insertCell(5).innerText = log.note;
+  const last7 = data.slice(0, 7).reverse();
+  const last30 = data.slice(0, 30).reverse();
+
+  for (const row of data) {
+    const tr = tbody.insertRow();
+    tr.insertCell().innerText = row.date;
+    tr.insertCell().innerText = row.f1;
+    tr.insertCell().innerText = row.f2;
+    tr.insertCell().innerText = row.f3;
+    tr.insertCell().innerText = row.f4;
+    tr.insertCell().innerText = row.f5;
+  }
+
+  drawChart("weeklyChart", last7);
+  drawChart("monthlyChart", last30);
+}
+
+function drawChart(canvasId, logs) {
+  const ctx = document.getElementById(canvasId).getContext("2d");
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: logs.map(r => r.date),
+      datasets: [
+        { label: "Ansia", data: logs.map(r => r.f1), borderWidth: 2 },
+        { label: "Nodo", data: logs.map(r => r.f2), borderWidth: 2 },
+        { label: "Energia", data: logs.map(r => r.f3), borderWidth: 2 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { min: 0, max: 10 } }
+    }
   });
-}
-
-function renderCharts() {
-  const logs = getLogs();
-  const last7 = logs.slice(-7);
-  const last30 = logs.slice(-30);
-
-  const makeChart = (canvasId, dataSet) => {
-    const ctx = document.getElementById(canvasId).getContext("2d");
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: dataSet.map(d => d.date),
-        datasets: [
-          {
-            label: "Ansia",
-            data: dataSet.map(d => d.ansia),
-            borderWidth: 2
-          },
-          {
-            label: "Nodo",
-            data: dataSet.map(d => d.nodo),
-            borderWidth: 2
-          },
-          {
-            label: "Energia",
-            data: dataSet.map(d => d.energia),
-            borderWidth: 2
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            min: 0,
-            max: 10
-          }
-        }
-      }
-    });
-  };
-
-  makeChart("weeklyChart", last7);
-  makeChart("monthlyChart", last30);
-}
-
-function exportData() {
-  const logs = getLogs();
-  const header = "Data,Ansia,Nodo, Energia, Rivotril, Note\n";
-  const rows = logs.map(l => `${l.date},${l.ansia},${l.nodo},${l.energia},${l.rivotril},"${l.note.replace(/"/g, '""')}"`).join("\n");
-  const blob = new Blob([header + rows], { type: "text/csv" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "monitor_ansia.csv";
-  link.click();
 }

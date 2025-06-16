@@ -3,20 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Monitor Ansia</title>
+  <title>Monitor Ansia Cloud</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="pin-protect" style="display: none;">
-    <h2>Inserisci PIN</h2>
-    <input type="password" id="pin-input" placeholder="PIN">
-    <button onclick="checkPIN()">Accedi</button>
-    <p id="pin-error" style="color:red;"></p>
+  <div id="login-screen">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="login()">Accedi</button>
+    <button onclick="signup()">Registrati</button>
+    <p id="auth-error" style="color:red;"></p>
   </div>
 
   <div id="app" style="display: none;">
-    <h1>Monitor Ansia Giornaliero</h1>
+    <h1>Monitor Ansia Giornaliero (Cloud)</h1>
     <form id="log-form">
       <label>Ansia (0-10)<br><input type="number" id="ansia" min="0" max="10"></label><br>
       <label>Nodo stomaco (0-10)<br><input type="number" id="nodo" min="0" max="10"></label><br>
@@ -25,16 +28,16 @@
       <label>Note<br><textarea id="note"></textarea></label><br>
       <button type="submit">Salva</button>
     </form>
-    <button onclick="exportData()">Esporta CSV</button>
+    <button onclick="logout()">Logout</button>
     <h2>Storico</h2>
     <table id="log-table">
       <thead><tr><th>Data</th><th>Ansia</th><th>Nodo</th><th>Energia</th><th>Rivotril</th><th>Note</th></tr></thead>
       <tbody></tbody>
     </table>
     <h2>Grafico Settimanale</h2>
-    <canvas id="weeklyChart" width="400" height="200"></canvas>
+    <canvas id="weeklyChart"></canvas>
     <h2>Grafico Mensile</h2>
-    <canvas id="monthlyChart" width="400" height="200"></canvas>
+    <canvas id="monthlyChart"></canvas>
   </div>
 
   <script src="app.js"></script>
