@@ -1,0 +1,25 @@
+body {
+  font-family: sans-serif;
+  padding: 1em;
+  max-width: 600px;
+  margin: auto;
+  background: #f8f9fa;
+}
+input, textarea {
+  width: 100%;
+  margin-bottom: 0.5em;
+}
+button {
+  padding: 0.5em 1em;
+  margin-top: 1em;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  margin-bottom: 0.5em;
+  background: #ffffff;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+}
